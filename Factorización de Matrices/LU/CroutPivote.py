@@ -6,7 +6,7 @@ def Pivotar(A):
         max, l = 0, 0
         for i in range(k, n):
             t = A[i][k] if A[i][k] > 0 else -A[i][k]
-            max, l = t, i if t > max else max, l
+            (max, l) = (t, i) if t > max else (max, l)
         if(l != 0):
             for j in range(n):
                 A[k][j], A[l][j] = A[l][j], A[k][j]
