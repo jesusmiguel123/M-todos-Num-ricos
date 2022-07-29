@@ -10,69 +10,60 @@ def evaluar(var, fun, x):
     return f
 
 def Biseccion(var, fun, a, b, k):
+    lx, lxu, lxr, lfr, le = [], [], [], [], []
     c = 0
     for i in range(k):
-        c1 = (a + b)/2
-        a1 = a
-        b1 = b
+        a1, b1, c1 = a, b, (a + b)/2
         if(evaluar(var, fun, c) == 0):
             return a, b, c, 0, 0
         if(evaluar(var, fun, a)*evaluar(var, fun, c1) < 0):
             b = c1
         else:
             a = c1
-        if((c1 - c) > 0):
-            e = c1 - c
-        else:
-            e = -(c1 - c)
+        e = c1 - c if (c1 - c) > 0 else -(c1 - c)
         c = c1
-    return a1, b1, c, evaluar(var, fun, c), e
+        lx.append(a1), lxu.append(b1), lxr.append(c), lfr.append(evaluar(var, fun, c)), le.append(e)
+    return lx, lxu, lxr, lfr, le
 
 def BiseccionParada(var, fun, a, b, tol):
-    e = 10000000000000
-    i = 0
-    c = 0
+    e, i, c = 10000000000000, 0, 0
     while(e > tol and i < 1000):
-        c1 = (a + b)/2
-        a1 = a
-        b1 = b
+        a1, b1, c1 = a, b, (a + b)/2
         if(evaluar(var, fun, c) == 0):
             return a, b, c, 0, 0
         if(evaluar(var, fun, a)*evaluar(var, fun, c1) < 0):
             b = c1
         else:
             a = c1
-        if((c1 - c) > 0):
-            e = c1 - c
-        else:
-            e = -(c1 - c)
+        e = c1 - c if (c1 - c) > 0 else -(c1 - c)
         c = c1
-        print(i + 1, ": x1=", a1, "xu=", b1, "xr=", c1, "fr=",  evaluar(var, fun, c),"ea=", e)
+        print(f"{i + 1}: x1 = {x} - xu = {xu} - xr = {xr} - fr = {fr} - {evaluar(var, fun, c)} - ea = {e}")
         i = i + 1
     return i
 
-var = 'x'
-fun1 = 'sin(2*x) - 2*cos(x/3)'
-x0 = 4
-x1 = 5
-k = 10
+def main():
+    var = 'x'
+    fun1 = 'sin(2*x) - 2*cos(x/3)'
+    x0, x1 = 4, 5
+    iter = 10
 
-print("Función: ")
-sym.pprint(sym.sympify(fun1))
-print("\n0 : x1=", x0, "xu=", x1, "xr= - fr= - ea= -")
+    print("Función: ")
+    sym.pprint(sym.sympify(fun1))
 
-iter = k
-itera = np.arange(1, iter + 1, 1)
-error = np.zeros(len(itera))
+    itera = np.arange(1, iter + 1, 1)
 
-for i in range(iter):
-    x, xu, xr, fr, error[i] = Biseccion(var, fun1, x0, x1, itera[i])
-    print(i + 1, ": x1=", x, "xu=", xu, "xr=", xr, "fr=", fr,"ea=", error[i])
+    lx, lxu, lxr, lfr, error = Biseccion(var, fun1, x0, x1, iter)
 
-fig, ax = plt.subplots()
-ax.plot(itera, error)
+    for i in range(iter):
+        print(f"{i + 1}: x1 = {lx[i]} - xu = {lxu[i]} - xr = {lxr[i]} - fr = {lfr[i]} - ea = {error[i]}")
 
-ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
-ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(itera, error)
 
-plt.show()
+    ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
+    ax.grid()
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()

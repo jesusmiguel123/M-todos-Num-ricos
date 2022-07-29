@@ -10,57 +10,49 @@ def evaluar(var, fun, x):
     return f
 
 def Secante(var, fun, x0, x1, k):
+    la, lb, lx2, lev, le = [], [], [], [], []
     for i in range(k):
-        x2 = x1 - evaluar(var, fun, x1)*(x1 -x0)/(evaluar(var, fun, x1) - evaluar(var, fun, x0))
-        a = x0
-        x0 = x1
-        if((x2 - x1) > 0):
-            e = x2 - x1
-        else:
-            e = -(x2 - x1)
-        b = x1
-        x1 = x2
-    return a, b, x2, evaluar(var, fun, x2), e
+        a, x0, x2 = x0, x1, x1 - evaluar(var, fun, x1)*(x1 -x0)/(evaluar(var, fun, x1) - evaluar(var, fun, x0))
+        e = x2 - x1 if (x2 - x1) > 0 else -(x2 - x1)
+        b, x1 = x1, x2
+        if(e == 0):
+            break
+        la.append(a), lb.append(b), lx2.append(x2), lev.append(evaluar(var, fun, x2)), le.append(e)
+    return la, lb, lx2, lev, le
 
 def SecanteParada(var, fun, x0, x1, tol):
-    e = 100000000000000
-    i = 0
+    e, i = 100000000000000, 0
     while(e > tol and i < 1000):
-        x2 = x1 - evaluar(var, fun, x1)*(x1 -x0)/(evaluar(var, fun, x1) - evaluar(var, fun, x0))
-        a = x0
-        x0 = x1
-        if((x2 - x1) > 0):
-            e = x2 - x1
-        else:
-            e = -(x2 - x1)
-        b = x1
-        x1 = x2
-        print(i + 1, ": x0=", a, ": x1=", b, ": x2=", x2, "fx2=", evaluar(var, fun, x2),"ea=", e)
+        a, x0, x2 = x0, x1, x1 - evaluar(var, fun, x1)*(x1 -x0)/(evaluar(var, fun, x1) - evaluar(var, fun, x0))
+        e = x2 - x1 if (x2 - x1) > 0 else -(x2 - x1)
+        b, x1 = x1, x2
+        print(f"{i + 1}: x0 = {a} - x1 = {b} - x2 = {x2} - f(x2)= {evaluar(var, fun, x2)} - ea = {e}")
         i = i + 1
     return i
 
-var = 'x'
-fun = 'x**3 - sin(x)'
-x0 = 1.1
-x1 = 1.0
-k = 8
+def main():
+    var = 'x'
+    fun = 'x**3 - sin(x)'
+    x0, x1 = 1.1, 1.0
+    iter = 7
 
-print("Función: ")
-sym.pprint(sym.sympify(fun))
-print("\n0 : x0=", x0, ": x1=", x1, ": x2= - fx2= - ea= -")
+    print("Función: ")
+    sym.pprint(sym.sympify(fun))
 
-iter = k
-itera = np.arange(1, iter + 1, 1)
-error = np.zeros(len(itera))
+    lxa, lxb, lxc, lfxc, error = Secante(var, fun, x0, x1, iter)
 
-for i in range(iter):
-    xa, xb, xc, fxc, error[i] = Secante(var, fun, x0, x1, itera[i])
-    print(i + 1, ": x0=", xa, ": x1=", xb, ": x2=", xc, "fx2=", fxc,"ea=", error[i])
+    itera = np.arange(1, len(error) + 1, 1)
 
-fig, ax = plt.subplots()
-ax.plot(itera, error)
+    for i in range(len(error)):
+        print(f"{i + 1}: x0 = {lxa[i]} - x1 = {lxb[i]} - x2 = {lxc[i]} - f(x2)= {lfxc[i]} - ea = {error[i]}")
 
-ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
-ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(itera, error)
 
-plt.show()
+    ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
+    ax.grid()
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()

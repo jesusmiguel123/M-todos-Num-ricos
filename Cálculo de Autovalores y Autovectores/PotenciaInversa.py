@@ -1,34 +1,33 @@
 import numpy as np
 
 def potenciaInversa(A, x, k):
-    print("Matriz inversa de A:")
     B = np.linalg.inv(A)
-    print(B)
+    print(f"Matriz inversa de A:\n{B}")
     for it in range(k):
         x = np.dot(B, x)
         n, m = x.shape
         max = 0
         for i in range(n):
-            if(x[i] > 0):
-                d = x[i]
-                s = 1
-            else:
-                d = -x[i]
-                s = 0
-            if(d > max):
-                max = d
-                s0 = s
-        if(s0 == 0):
-            max = -max
+            (d, s) = (x[i], 1) if x[i] > 0 else (-x[i], 0)
+            (max, s0) = (d, s) if d > max else (max, s0)
+        max = -max if s0 == 0 else max
         x = x/max
-        print(it + 1, ": Autovalor dominante de la inversa de A", max, "Autovector asociado", x[0],x[1])
-    print("Autovalor de módulo mínimo:", 1/max)
+        print(f"{it + 1}: Autovalor dominante de la inversa de A: {max[0]} - Autovector asociado: [", end="")
+        for e in x[:-1]:
+            print(e[0], end=" ")
+        print(f"{x[-1][0]}]")
+    print(f"Autovalor de módulo mínimo: {1/max[0]}")
 
-print("Matriz A:")
-A = np.array([[-18.0, 40],[-12, 26]])
-print(A)
-print("Vector ínicial:")
-x = np.array([[1.0],[1]])
-print(x)
 
-potenciaInversa(A, x, 10)
+def main():
+    A = np.array([[-18., 40.],
+                  [-12., 26.]])
+    print(f"Matriz A:\n{A}")
+    x = np.array([[1.],
+                  [1.]])
+    print(f"Vector ínicial:\n{x}")
+
+    potenciaInversa(A, x, 10)
+
+if __name__ == "__main__":
+    main()

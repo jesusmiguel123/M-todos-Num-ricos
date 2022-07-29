@@ -2,35 +2,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg as la
 
-def Jacobi(A, b, x0, k):
+def GaussSeidel(A, b, x0, k):
     lx, le = [], []
     D = np.diag(np.diag(A))
-    L, U = np.tril(A) - D, np.triu(A) - D
+    L, U = np.tril(A), np.triu(A) - D
     x = x0
     for i in range(k):
-        T = -np.dot(la.inv(D), L + U)
-        c = np.dot(la.inv(D), b)
+        T, c = -np.dot(la.inv(L), U), np.dot(la.inv(L), b)
         x = np.dot(T, x) + c
-        lx.append(x), le.append(la.norm(b - np.dot(A, x), 2))
+        r = b - np.dot(A, x)
+        e = la.norm(r, 2)
+        lx.append(x), le.append(e)
     return lx, le
 
-def JacobiParada(A, b, x0, tau):
+def GaussSeidelParada(A, b, x0, tau):
     D = np.diag(np.diag(A))
-    L, U = np.tril(A) - D, np.triu(A) - D
-    e = la.norm(b - np.dot(A, x0), 2)
-    x, i = x0, 0
+    L, U = np.tril(A), np.triu(A) - D
+    r = b - np.dot(A, x0)
+    e, x, i = la.norm(r, 2), x0, 0
     while(tau > e and i <= 100):
-        T = -np.dot(la.inv(D), L + U)
-        c = np.dot(la.inv(D), b)
+        T, c = -np.dot(la.inv(L), U), np.dot(la.inv(L), b)
         x = np.dot(T, x) + c
-        e = la.norm(b - np.dot(A, x), 2)
-        print(f"{i + 1}: x = {x.T} - error = {e}")
+        r = b - np.dot(A, x)
+        e = la.norm(r, 2)
+        print(f"{i + 1}: x = {x} - error = {e}")
         i = i + 1
     return x, i
 
 def main():
-    A = np.array([[2.,  5.],
-                  [1.,  7.]])
+    A = np.array([[16.,   3.],
+                  [ 7., -11.]])
     print(f"Matriz A:\n{A}")
     b = np.array([[11.],
                   [13.]])
@@ -42,7 +43,7 @@ def main():
 
     itera = np.arange(1, iter + 1, 1)
 
-    lx, error = Jacobi(A, b, x0, iter)
+    lx, error = GaussSeidel(A, b, x0, iter)
 
     for i in range(iter):
         print(f"{i + 1}: x = {lx[i].T} - error = {error[i]}")

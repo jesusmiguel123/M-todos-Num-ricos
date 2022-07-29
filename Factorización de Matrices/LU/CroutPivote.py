@@ -1,48 +1,49 @@
 import numpy as np
-import scipy.linalg as la
 
-a = np.array([[1.0, 2, 5],[8, 4, 2],[2, 10, 6]])
-print("Matriz A:")
-print(a)
+def Pivotar(A):
+    n, m = A.shape
+    for k in range(n):
+        max, l = 0, 0
+        for i in range(k, n):
+            t = A[i][k] if A[i][k] > 0 else -A[i][k]
+            if(t > max):
+                max, l = t, i
+        if(l != 0):
+            for j in range(n):
+                A[k][j], A[l][j] = A[l][j], A[k][j]
+    return A
 
-n, m = a.shape
-L = np.eye(n)
-U = np.eye(n)
+def Crout(A):
+    n, m = A.shape
+    L, U = np.eye(n), np.eye(n)
+    for k in range(n):
+        for i in range(k, n):
+            z = 0
+            for p in range(k):
+                z = z + L[i][p]*U[p][k]
+            L[i][k] = A[i][k] - z
+        for i in range(k + 1, n):
+            z = 0
+            for q in range(k):
+                z = z + L[k][q]*U[q][i]
+            U[k][i] = (A[k][i] - z)/L[k][k]
+    return L, U
 
-for k in range(n):
-    max = 0
-    l = 0
-    for i in range(k, n):
-        t = a[i][k]
-        if(t > 0):
-            t = t
-        else:
-            t = -t
-        if(t > max):
-            max = t
-            l = i
-    if(l != 0):
-        for j in range(n):
-            aux = a[l][j]
-            a[l][j] = a[k][j]
-            a[k][j] = aux
+def main():
+    A = np.array([[1.,  2., 5.],
+                  [8.,  4., 2.],
+                  [2., 10., 6.]])
+    print(f"Matriz A:\n{A}")
 
-for k in range(n):
-    for i in range(k, n):
-        z = 0
-        for p in range(k):
-            z = z + L[i][p]*U[p][k]
-        L[i][k] = a[i][k] - z
-    for i in range(k + 1, n):
-        z = 0
-        for q in range(k):
-            z = z + L[k][q]*U[q][i]
-        U[k][i] = (a[k][i] - z)/L[k][k]
+    A = Pivotar(A)
 
-print("Matriz pivotada:")
-print(a)
-print("\nFactorización de Doolittle de A:\n")
-print("Matriz triangular inferior L:")
-print(L)
-print("Matriz triangular superior U:")
-print(U)
+    print(f"Matriz pivotada:\n{A}")
+
+    L, U = Crout(A)
+
+    print("\nFactorización LU de A:\n")
+    print(f"Matriz triangular inferior L:\n{L}")
+    print(f"\nMatriz triangular superior U:\n{U}")
+
+if __name__ == "__main__":
+    main()

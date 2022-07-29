@@ -24,54 +24,51 @@ def Diferenciar(var, fun, x):
     return k
 
 def Newton(var, fun, x, k):
+    lx, lev, le = [], [], []
     for i in range(k):
         x1 = x - evaluar(var, fun, x)/Diferenciar(var, fun, x)
-        if((x1 - x) > 0):
-            e = x1 - x
-        else:
-            e = -(x1 - x)
+        e = x1 - x if (x1 - x) > 0 else -(x1 - x)
         x = x1
-    return x, evaluar(var, fun, x), e
+        lx.append(x), lev.append(evaluar(var, fun, x)), le.append(e)
+    return lx, lev, le
 
 def NewtonParada(var, fun, x, tol):
-    e = 10000000000000
-    i = 0
+    e, i = 10000000000000, 0
     while(e > tol and i < 1000):
         x1 = x - evaluar(var, fun, x)/Diferenciar(var, fun, x)
-        if((x1 - x) > 0):
-            e = x1 - x
-        else:
-            e = -(x1 - x)
+        e = x1 - x if (x1 - x) > 0 else -(x1 - x)
         x = x1
-        print(i + 1, ": x=", x, "fx=", evaluar(var, fun, x),"ea=", e)
+        print(f"{i + 1}: x = {x} - f(x) = {evaluar(var, fun, x)} - ea = {e}")
         i = i + 1
     return i
 
-var = 'x'
-fun = 'x**7 - 13*x - 12'
-x0 = 4.5
-k = 10
+def main():
+    var = 'x'
+    fun = 'x**7 - 13*x - 12'
+    x0 = 4.5
+    iter = 10
 
-dx = Dx(var, fun)
+    dx = Dx(var, fun)
 
-print("Función: ")
-sym.pprint(sym.sympify(fun))
-print("Derivada: ")
-sym.pprint(dx)
-print("\n0 : x=", x0, "fx=", evaluar(var, fun, x0),"ea= -")
+    print("Función: ")
+    sym.pprint(sym.sympify(fun))
+    print("Derivada: ")
+    sym.pprint(dx)
 
-iter = k
-itera = np.arange(1, iter + 1, 1)
-error = np.zeros(len(itera))
+    itera = np.arange(1, iter + 1, 1)
 
-for i in range(iter):
-    x, fx, error[i] = Newton(var, fun, x0, itera[i])
-    print(i + 1, ": x=", x, "fx=", fx,"ea=", error[i])
+    lx, lfx, error = Newton(var, fun, x0, iter)
 
-fig, ax = plt.subplots()
-ax.plot(itera, error)
+    for i in range(iter):
+        print(f"{i + 1}: x = {lx[i]} - f(x) = {lfx[i]} - ea = {error[i]}")
 
-ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
-ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(itera, error)
 
-plt.show()
+    ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
+    ax.grid()
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()

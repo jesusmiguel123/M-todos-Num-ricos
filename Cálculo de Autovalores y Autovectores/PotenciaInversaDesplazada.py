@@ -2,38 +2,38 @@ import numpy as np
 
 def potenciaInversaDesplazada(A, x, l, k):
     I = np.eye(len(A))
-    print("Matriz C = A - landa * I:")
     C = A - l * I
-    print(C)
-    print("Inversa de C:")
+    print(f"Matriz C = A - landa * I:\n{C}")
     B = np.linalg.inv(C)
-    print(B)
+    print(f"Inversa de C:\n{B}")
     for it in range(k):
         x = np.dot(B, x)
         n, m = x.shape
         max = 0
         for i in range(n):
-            if(x[i] > 0):
-                d = x[i]
-                s = 1
-            else:
-                d = -x[i]
-                s = 0
-            if(d > max):
-                max = d
-                s0 = s
-        if(s0 == 0):
-            max = -max
+            (d, s) = (x[i], 1) if x[i] > 0 else (-x[i], 0)
+            (max, s0) = (d, s) if d > max else (max, s0)
+        max = -max if s0 == 0 else max
         x = x/max
-        print(it + 1, ": Autovalor dominante de la inversa de C", max, "Autovector asociado", x[0],x[1], x[2])
-    print("Autovalor asociado a A:", 1/max + l)
+        print(f"{it + 1}: Autovalor dominante de la inversa de C: {max[0]} - Autovector asociado: [", end="")
+        for e in x[:-1]:
+            print(e[0], end=" ")
+        print(f"{x[-1][0]}]")
+    print(f"Autovalor asociado a A: {1/max[0] + l}")
 
-print("Matriz A:")
-A = np.array([[3, -1, 0],[-1, 2, -1],[0, -1, 3]])
-print(A)
-print("Vector ínicial:")
-x = np.array([[5.0],[1],[1]])
-print(x)
-l = 2.8
-print("Valor propio ínicial:", l)
-potenciaInversaDesplazada(A, x, l, 10)
+def main():
+    A = np.array([[ 3., -1.,  0.],
+                  [-1.,  2., -1.],
+                  [ 0., -1.,  3.]])
+    print(f"Matriz A:\n{A}")
+    x = np.array([[5.],
+                  [1.],
+                  [1.]])
+    print(f"Vector ínicial:\n{x}")
+    l = 2.8
+    print(f"Valor propio ínicial: {l}")
+    
+    potenciaInversaDesplazada(A, x, l, 10)
+
+if __name__ == "__main__":
+    main()

@@ -1,16 +1,19 @@
 from numpy import array
 from scipy.linalg import cholesky
 
-a = array([[5, 1, -2, 0],[1, 2, -0, 0],[-2, 0, 4, 1],[0, 0, 1, 3]])
+def main():
+    A = array([[ 5., 1., -2., 0.],
+               [ 1., 2., -0., 0.],
+               [-2., 0.,  4., 1.],
+               [ 0., 0.,  1., 3.]])
+    print(f"Matriz A:\n{A}")
 
-print("Matriz A:")
-print(a)
+    L = cholesky(A, lower = True)
+    U = cholesky(A, lower = False)
 
-L = cholesky(a, lower = True)
-U = cholesky(a, lower = False)
+    print("\nFactorización LU de A:\n")
+    print(f"Matriz triangular inferior L:\n{L}")
+    print(f"\nMatriz triangular superior L-transpuesta:\n{U}")
 
-print("\nFactorización de Cholesky de A:\n")
-print("Matriz triangular inferior L:")
-print(L)
-print("Matriz triangular superior L-transpuesta:")
-print(U)
+if __name__ == "__main__":
+    main()

@@ -1,32 +1,36 @@
 import numpy as np
 
-def Givens(A, i, j):
-    i = i - 1
-    j = j - 1
+def GivensMatrix(A, i, j):
     n, m = A.shape
     G = np.eye(n)
     r = (A[j][j]**2 + A[i][j]**2)**0.5
-    c = A[j][j]/r
-    s = -A[i][j]/r
-    G[j][i] = -s
-    G[i][j] = s
-    G[i][i] = c
-    G[j][j] = c
+    c, s = A[j][j]/r, -A[i][j]/r
+    G[i][i], G[i][j] =  c, s
+    G[j][i], G[j][j] = -s, c
     return G
 
-A = np.array([[1, 2, 3],[3, 1, 2],[1, 3, 1]])
-G1 = Givens(A, 2, 1)
-print(G1)
-A = np.dot(G1, A)
-print(A)
-G2 = Givens(A, 3, 1)
-print(G2)
-A = np.dot(G2, A)
-print(A)
-G3 = Givens(A, 3, 2)
-print(G3)
-A = np.dot(G3, A)
-print(A)
-Q = np.dot(np.dot(G1.T, G2.T), G3.T)
-print(Q)
-print(np.dot(Q, A))
+def GivensQR(A):
+    n, m = A.shape
+    G, R = np.eye(n), A
+    for i in range(1, n):
+        for j in range(0, i):
+            Gx = GivensMatrix(R, i, j)
+            G = np.dot(Gx, G)
+            R = np.dot(Gx, R)
+    Q = G.T
+    return Q, R
+
+def main():
+    A = np.array([[1., 2., 3.],
+                  [3., 1., 2.],
+                  [1., 3., 1.]])
+    print(f"Matriz A:\n{A}")
+
+    Q, R = GivensQR(A)
+
+    print("\nFactorización QR de A:\n")
+    print(f"Matriz ortogonal Q:\n{Q}")
+    print(f"\nMatriz triangular superior R:\n{R}")
+
+if __name__ == "__main__":
+    main()
