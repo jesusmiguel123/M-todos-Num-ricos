@@ -1,6 +1,6 @@
 import numpy as np
 
-def potenciaInversa(A, x, k):
+def PotenciaInversa(A, x, k):
     B = np.linalg.inv(A)
     print(f"Matriz inversa de A:\n{B}")
     for it in range(k):
@@ -27,7 +27,7 @@ def main():
                   [1.]])
     print(f"Vector ínicial:\n{x}")
 
-    potenciaInversa(A, x, 10)
+    PotenciaInversa(A, x, 10)
 
 if __name__ == "__main__":
     main()

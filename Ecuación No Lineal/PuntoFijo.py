@@ -9,7 +9,7 @@ def evaluar(var, fun, x):
     f = f.evalf()
     return f
 
-def puntoFijo(var, fun0, fun1, x, k):
+def PuntoFijo(var, fun0, fun1, x, k):
     lx, lev, le = [], [], []
     for i in range(k):
         x1 = evaluar(var, fun1, x)
@@ -18,7 +18,7 @@ def puntoFijo(var, fun0, fun1, x, k):
         lx.append(x), lev.append(evaluar(var, fun0, x)), le.append(e)
     return lx, lev, le
 
-def puntoFijoParada(var, fun0, fun1, x, tol):
+def PuntoFijoParada(var, fun0, fun1, x, tol):
     e, i = 100000000000000, 0
     while(e > tol and i < 1000):
         x1 = evaluar(var, fun1, x)
@@ -42,7 +42,7 @@ def main():
 
     itera = np.arange(1, iter + 1, 1)
     
-    lx, lfx, error = puntoFijo(var, fun0, fun1, x0, iter)
+    lx, lfx, error = PuntoFijo(var, fun0, fun1, x0, iter)
 
     for i in range(iter):
         print(f"{i + 1}: x = {lx[i]} - f(x) = {lfx[i]} - ea = {error[i]}")

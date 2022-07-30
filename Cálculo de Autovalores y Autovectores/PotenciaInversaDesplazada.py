@@ -1,6 +1,6 @@
 import numpy as np
 
-def potenciaInversaDesplazada(A, x, l, k):
+def PotenciaInversaDesplazada(A, x, l, k):
     I = np.eye(len(A))
     C = A - l * I
     print(f"Matriz C = A - landa * I:\n{C}")
@@ -33,7 +33,7 @@ def main():
     l = 2.8
     print(f"Valor propio ínicial: {l}")
     
-    potenciaInversaDesplazada(A, x, l, 10)
+    PotenciaInversaDesplazada(A, x, l, 10)
 
 if __name__ == "__main__":
     main()

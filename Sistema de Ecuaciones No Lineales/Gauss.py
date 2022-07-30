@@ -42,53 +42,59 @@ def evaluar(var, fun, x):
         ev[i] = ev[i].evalf()
     return ev
 
-def metGauss(var, fun, x, k):
+def Gauss(var, fun, x, k):
+    lx, le = [], []
     for i in range(k):
         inJac = inferiorJacobiano(var, fun, x)**-1
         evf = evaluar(var, fun, x)
         x1 = x - inJac*evf
-        n = norma(x - x1)
+        lx.append(x), le.append(norma(x - x1))
         x = x1
-    return x, n
+    return lx, le
 
-def metGaussParada(var, fun, x, tol):
-    n = 1000000000
-    i = 0
+def GaussParada(var, fun, x, tol):
+    n, i = 1000000000, 0
     while(n > tol and i < 1000):
         inJac = inferiorJacobiano(var, fun, x)**-1
         evf = evaluar(var, fun, x)
         x1 = x - inJac*evf
         n = norma(x - x1)
         x = x1
-        print(i + 1, ": x=", x[0], ",", x[1], ",", x[2], "ea=", n)
+        print(f"{i + 1}: x = {x.T} - ea = {n}")
         i = i + 1
     return i
 
-x0 = sym.Matrix([1, 1, 1])
-var = 'x y z'
-fun = sym.Matrix(['3*x - cos(y*z)- 1/2', 'x**2 - 81*(y + 1/10)**2 + sin(z) + 1.06','exp(-x*y) + 20*z + (10*pi - 3)/3'])
-k = 12
+def main():
+    x0 = sym.Matrix([1, 
+                     1, 
+                     1])
+    var = 'x y z'
+    fun = sym.Matrix(['3*x - cos(y*z) - 1/2', 
+                      'x**2 - 81*(y + 1/10)**2 + sin(z) + 1.06',
+                      'exp(-x*y) + 20*z + (10*pi - 3)/3'])
+    iter = 12
 
-jacobiano = Jacobiano(var, fun)
+    jacobiano = Jacobiano(var, fun)
 
-print("Funciones:")
-sym.pprint(fun)
-print("Parte triangular inferior del Jacobiano del sístema: ")
-sym.pprint(jacobiano)
-print("\n0 : x=", x0[0], ",", x0[1], ",", x0[2], "ea= -")
+    print("Funciones:")
+    sym.pprint(fun)
+    print("Parte triangular inferior del Jacobiano del sístema:")
+    sym.pprint(jacobiano)
 
-iter = k
-itera = np.arange(1, iter + 1, 1)
-error = np.zeros(len(itera))
+    itera = np.arange(1, iter + 1, 1)
 
-for i in range(iter):
-    x, error[i] = metGauss(var, fun, x0, itera[i])
-    print(i + 1, ": x=", x[0], ",", x[1], ",", x[2], "ea=", error[i])
+    lx, error = Gauss(var, fun, x0, iter)
 
-fig, ax = plt.subplots()
-ax.plot(itera, error)
+    for i in range(iter):
+        print(f"{i + 1}: x = {lx[i].T} - ea = {error[i]}")
 
-ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
-ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(itera, error)
 
-plt.show()
+    ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
+    ax.grid()
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,7 @@ def evaluar(var, fun, x):
     f = f.evalf()
     return f
 
-def regulaFalsa(var, fun, a, b, k):
+def RegulaFalsa(var, fun, a, b, k):
     la, lb, lc, lev, le = [], [], [], [], []
     c = 0
     for i in range(k):
@@ -25,7 +25,7 @@ def regulaFalsa(var, fun, a, b, k):
         la.append(a1), lb.append(b1), lc.append(c), lev.append(evaluar(var, fun, c)), le.append(e)
     return la, lb, lc, lev, le
 
-def regulaFalsaParada(var, fun, a, b, tol):
+def RegulaFalsaParada(var, fun, a, b, tol):
     e, i, c = 100000000000, 0, 0
     while(e > tol and i < 1000):
         a1, b1, c1 = a, b, (b*evaluar(var, fun, a)-a*evaluar(var, fun, b))/(evaluar(var, fun, a) - evaluar(var, fun, b))
@@ -52,7 +52,7 @@ def main():
 
     itera = np.arange(1, iter + 1, 1)
 
-    lx, lxu, lxr, lfxr, error = regulaFalsa(var, fun, x0, x1, iter)
+    lx, lxu, lxr, lfxr, error = RegulaFalsa(var, fun, x0, x1, iter)
 
     for i in range(iter):
         print(f"{i + 1}: x1 = {lx[i]} - xu = {lxu[i]} - xr = {lxr[i]} - f(xr) = {lfxr[i]} - ea = {error[i]}")

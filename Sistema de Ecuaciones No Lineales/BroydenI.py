@@ -14,8 +14,7 @@ def Jacobiano(var, fun):
     J = sym.zeros(len(f), len(vars))
     for i, fi in enumerate(f):
         for j, s in enumerate(vars):
-            if(i == j):
-                J[i, j] = sym.diff(fi, s)
+            J[i, j] = sym.diff(fi, s)
     return J
 
 def completoJacobiano(var, fun, x):
@@ -30,32 +29,6 @@ def completoJacobiano(var, fun, x):
             J[i, j] = J[i, j].evalf()
     return J
 
-def inferiorJacobiano(var, fun, x):
-    vars = sym.symbols(var)
-    f = sym.sympify(fun)
-    J = sym.zeros(len(f), len(vars))
-    for i, fi in enumerate(f):
-        for j, s in enumerate(vars):
-            if(i >= j):
-                J[i, j] = sym.diff(fi, s)
-                for k, muda in enumerate(x):
-                    J[i, j] = J[i, j].subs(vars[k], x[k])
-                J[i, j] = J[i, j].evalf()
-    return J
-
-def diagonalJacobiano(var, fun, x):
-    vars = sym.symbols(var)
-    f = sym.sympify(fun)
-    J = sym.zeros(len(f), len(vars))
-    for i, fi in enumerate(f):
-        for j, s in enumerate(vars):
-            if(i == j):
-                J[i, j] = sym.diff(fi, s)
-                for k, muda in enumerate(x):
-                    J[i, j] = J[i, j].subs(vars[k], x[k])
-                J[i, j] = J[i, j].evalf()
-    return J
-
 def evaluar(var, fun, x):
     vars = sym.symbols(var)
     f = sym.sympify(fun)
@@ -67,7 +40,8 @@ def evaluar(var, fun, x):
         ev[i] = ev[i].evalf()
     return ev
 
-def metBroydenI(var, fun, x, k):
+def BroydenI(var, fun, x, k):
+    lx, le = [], []
     A = sym.eye(len(x))
     A = completoJacobiano(var, fun, x)
     for i in range(k):
@@ -78,13 +52,12 @@ def metBroydenI(var, fun, x, k):
         dif = evaluar(var, fun, x1) - evaluar(var, fun, x)
         m = delta.T*delta
         A = A + (dif - A*delta)*delta.T/m[0]
-        n = norma(x - x1)
+        lx.append(x), le.append(norma(x - x1))
         x = x1
-    return x, n
+    return lx, le
 
-def metBroydenIParada(var, fun, x, tol):
-    n = 10000000000000
-    i = 0
+def BroydenIParada(var, fun, x, tol):
+    n, i = 10000000000000, 0
     A = sym.eye(len(x))
     A = completoJacobiano(var, fun, x)
     while(n > tol and i < 1000):
@@ -97,35 +70,41 @@ def metBroydenIParada(var, fun, x, tol):
         A = A + (dif - A*delta)*delta.T/m[0]
         n = norma(x - x1)
         x = x1
-        print(i + 1, ": x=", x[0], ",", x[1], ",", x[2], "ea=", n)
+        print(f"{i + 1}: x = {x.T} - ea = {n}")
         i = i + 1
     return i
 
-x0 = sym.Matrix([1, 1, 1])
-var = 'x y z'
-fun = sym.Matrix(['3*x - cos(y*z)- 1/2', 'x**2 - 81*(y + 1/10)**2 + sin(z) + 1.06','exp(-x*y) + 20*z + (10*pi - 3)/3'])
-k = 12
+def main():
+    x0 = sym.Matrix([1, 
+                     1, 
+                     1])
+    var = 'x y z'
+    fun = sym.Matrix(['3*x - cos(y*z) - 1/2', 
+                      'x**2 - 81*(y + 1/10)**2 + sin(z) + 1.06',
+                      'exp(-x*y) + 20*z + (10*pi - 3)/3'])
+    iter = 12
 
-jacobiano = Jacobiano(var, fun)
+    jacobiano = Jacobiano(var, fun)
 
-print("Funciones:")
-sym.pprint(fun)
-print("Diagonal del Jacobiano del sístema: ")
-sym.pprint(jacobiano)
-print("\n0 : x=", x0[0], ",", x0[1], ",", x0[2], "ea= -")
+    print("Funciones:")
+    sym.pprint(fun)
+    print("Jacobiano del sístema:")
+    sym.pprint(jacobiano)
 
-iter = k
-itera = np.arange(1, iter + 1, 1)
-error = np.zeros(len(itera))
+    itera = np.arange(1, iter + 1, 1)
 
-for i in range(iter):
-    x, error[i] = metBroydenI(var, fun, x0, itera[i])
-    print(i + 1, ": x=", x[0], ",", x[1], ",", x[2], "ea=", error[i])
+    lx, error = BroydenI(var, fun, x0, iter)
 
-fig, ax = plt.subplots()
-ax.plot(itera, error)
+    for i in range(iter):
+        print(f"{i + 1}: x = {lx[i].T} - ea = {error[i]}")
 
-ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
-ax.grid()
+    fig, ax = plt.subplots()
+    ax.plot(itera, error)
 
-plt.show()
+    ax.set(xlabel='iteraciones',ylabel='error',title='Iteraciones vs Error')
+    ax.grid()
+
+    plt.show()
+
+if __name__ == "__main__":
+    main()

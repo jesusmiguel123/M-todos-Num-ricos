@@ -37,7 +37,7 @@ def BiseccionParada(var, fun, a, b, tol):
             a = c1
         e = c1 - c if (c1 - c) > 0 else -(c1 - c)
         c = c1
-        print(f"{i + 1}: x1 = {x} - xu = {xu} - xr = {xr} - fr = {fr} - {evaluar(var, fun, c)} - ea = {e}")
+        print(f"{i + 1}: x1 = {x} - xu = {xu} - xr = {xr} - f(r) = {fr} - {evaluar(var, fun, c)} - ea = {e}")
         i = i + 1
     return i
 
@@ -55,7 +55,7 @@ def main():
     lx, lxu, lxr, lfr, error = Biseccion(var, fun1, x0, x1, iter)
 
     for i in range(iter):
-        print(f"{i + 1}: x1 = {lx[i]} - xu = {lxu[i]} - xr = {lxr[i]} - fr = {lfr[i]} - ea = {error[i]}")
+        print(f"{i + 1}: x1 = {lx[i]} - xu = {lxu[i]} - xr = {lxr[i]} - f(r) = {lfr[i]} - ea = {error[i]}")
 
     fig, ax = plt.subplots()
     ax.plot(itera, error)
